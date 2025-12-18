@@ -2,8 +2,9 @@ from lime import lime_tabular
 from utils import ModelTester
 from xgboost import XGBClassifier
 from matplotlib import pyplot as plt
+params = {'learning_rate': 0.05, 'max_depth': 6, 'n_estimators': 400}
 
-clf = XGBClassifier(enable_categorical=True)
+clf = XGBClassifier(enable_categorical=True, **params)
 tester = ModelTester(clf)
 tester.test_model()
 explainer = lime_tabular.LimeTabularExplainer(training_data=tester.X_train.values,

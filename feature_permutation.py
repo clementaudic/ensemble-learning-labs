@@ -6,8 +6,9 @@ from matplotlib import pyplot as plt
 
 
 categorical = ['COW', 'MAR', 'OCCP', 'POBP', 'RELP', 'SEX', 'RAC1P']
+params = {'learning_rate': 0.05, 'max_depth': 6, 'n_estimators': 400}
 
-clf = XGBClassifier(enable_categorical=True)
+clf = XGBClassifier(enable_categorical=True, **params)
 
 def permutation_feature_importance(clf):
     scores = []

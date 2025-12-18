@@ -52,7 +52,7 @@ class ModelTester():
             self.predictions = self.model.predict(x_test if x_test is not None else self.X_test)
         return self.predictions
 
-    def test_model(self, in_logs=False, file_name_prefix=""):
+    def test_model(self, in_logs=False, file_name_prefix="", generate_files = False):
         start_time = time()
         self.model.fit(self.X_train, self.y_train)
         self.train_time = time() - start_time
@@ -65,9 +65,10 @@ class ModelTester():
         if in_logs:
             with open("logs", "a") as f:
                 f.write(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds || Test time: {self.test_time:.2f} seconds\n")
-        self.save_confusion_matrix(file_name_prefix=file_name_prefix)
-        self.save_confusion_matrix(train=True, file_name_prefix=file_name_prefix)
-        self.save_classification_report(file_name_prefix=file_name_prefix)
+        if generate_files:
+            self.save_confusion_matrix(file_name_prefix=file_name_prefix)
+            self.save_confusion_matrix(train=True, file_name_prefix=file_name_prefix)
+            self.save_classification_report(file_name_prefix=file_name_prefix)
         return self.test_score
     
     def score_model(self, x_test=None):
