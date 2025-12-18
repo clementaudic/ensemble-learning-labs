@@ -1,8 +1,5 @@
+import os
 from pandas import read_csv, cut
-import matplotlib.pyplot as plt
-
-features_df = read_csv("data/alt_acsincome_ca_features_85.csv")
-labels = read_csv("data/alt_acsincome_ca_labels_85.csv")
 
 # Proving OCCP feature pertinence: Global wage mean: 0.410083 VS engineer subset mean: 0.809428
 
@@ -65,28 +62,26 @@ occupation_labels = [
     "Military Specific"
 ]
 
-features_df["OCCP"] = cut(features_df["OCCP"],bins = occupation_bins, labels = occupation_labels)
-
-# Places of birth
-
-# Northern Europe 106-108, 118-119, 121, 127, 135-136, 138-145 
-# Southern Europe 115-116, 120, 124, 129-131, 133-134, 146
-# Earthern Europe 100, 104-105, 117, 128, 132, 147-157, 160, 162 -165, 167-168
-# Eastern Asia 207, 209, 215, 217, 220-221, 225, 228, 232, 240
-# South Central Asia 200, 202-203, 210, 212, 218-219, 227, 229, 231, 238, 241, 244, 246
-# South Eastern Asia 204-206, 211, 223, 226, 233, 236-237, 242, 247, 250
-# Western Asia 158-159, 161, 201, 208, 213-214, 216, 222, 224, 230, 234-235, 239, 243, 245, 248
-# Northern America 001-059, 061-099, 300-302, 304-309
-# Latin America 303, 310-399
-# Eastern Africa 404, 406, 411, 413, 416-418, 422, 426-427, 431-432, 435, 437, 441-442, 445-446, 448, 453, 455, 457, 460-461, 463
-# Middle Africa 401, 407, 409-410, 412, 415, 419, 443, 459
-# Northern Africa 400, 414, 430, 436, 451, 456, 458
-# Southern Africa 403, 428, 438, 449, 452
-# Western Africa 402, 405, 408, 420-421, 423-425, 429, 433-434, 439-440, 444, 447, 450, 454
-# Oceania (Australia and New-Zealand Subregion) 501-502, 506-507, 515, 517 
-# Oceania (others) 060, 503-505, 508-514, 516, 518-553
-
 def map_pobp(code):
+
+    # Places of birth
+
+    # Northern Europe 106-108, 118-119, 121, 127, 135-136, 138-145 
+    # Southern Europe 115-116, 120, 124, 129-131, 133-134, 146
+    # Earthern Europe 100, 104-105, 117, 128, 132, 147-157, 160, 162 -165, 167-168
+    # Eastern Asia 207, 209, 215, 217, 220-221, 225, 228, 232, 240
+    # South Central Asia 200, 202-203, 210, 212, 218-219, 227, 229, 231, 238, 241, 244, 246
+    # South Eastern Asia 204-206, 211, 223, 226, 233, 236-237, 242, 247, 250
+    # Western Asia 158-159, 161, 201, 208, 213-214, 216, 222, 224, 230, 234-235, 239, 243, 245, 248
+    # Northern America 001-059, 061-099, 300-302, 304-309
+    # Latin America 303, 310-399
+    # Eastern Africa 404, 406, 411, 413, 416-418, 422, 426-427, 431-432, 435, 437, 441-442, 445-446, 448, 453, 455, 457, 460-461, 463
+    # Middle Africa 401, 407, 409-410, 412, 415, 419, 443, 459
+    # Northern Africa 400, 414, 430, 436, 451, 456, 458
+    # Southern Africa 403, 428, 438, 449, 452
+    # Western Africa 402, 405, 408, 420-421, 423-425, 429, 433-434, 439-440, 444, 447, 450, 454
+    # Oceania (Australia and New-Zealand Subregion) 501-502, 506-507, 515, 517 
+    # Oceania (others) 060, 503-505, 508-514, 516, 518-553
 
     regions = {
         "western_europe": list(range(101, 104)) + [109, 110, 122, 123, 125, 126, 137], # western_europe
@@ -111,19 +106,22 @@ def map_pobp(code):
         if code in region_codes:
             return region_name
 
-features_df["POBP"] = features_df["POBP"].apply(map_pobp)
-features_df.to_csv("data/cleaned_features.csv",index=False)
+def group_features(dataset_names,features_to_group_names):
+    for dataset_name in dataset_names:
+        if "_ca_" in dataset_name:
+            state_name = "california"
+        if "_co_" in dataset_name:
+            state_name = "colorado"
+        if "_ne_" in dataset_name:
+            state_name = "nevada"
+        features_df = read_csv(os.path.join("data",state_name,dataset_name))
+        if "OCCP" in features_to_group_names:
+            features_df["OCCP"] = cut(features_df["OCCP"],bins = occupation_bins, labels = occupation_labels)
+        if "POBP" in features_to_group_names:
+            features_df["POBP"] = features_df["POBP"].apply(map_pobp)
+        features_df.to_csv(os.path.join("data",state_name,dataset_name+"_with_"+"_and_".join(features_to_group_names)+"_regrouped"),index=False)
 
-def plot_features_distribution_in_the_dataset(feature_name):
-    feature_count = features_df[feature_name].value_counts()
-
-    plt.figure(figsize=(12, 6))
-    feature_count.plot(kind="bar")
-    plt.title(f"Distribution of the {feature_name} feature in the dataset")
-    plt.ylabel(feature_name)
-    plt.xticks(rotation=45, ha="right")
-    plt.tight_layout()
-    plt.show()
-
-# plot_features_distribution_in_the_dataset("OCCP")
-# plot_features_distribution_in_the_dataset("POBP")
+# "alt_acsincome_ca_features_85.csv"
+# "acsincome_co_allfeatures.csv"
+# "acsincome_ne_allfeatures.csv"
+group_features(["acsincome_co_allfeatures.csv","acsincome_ne_allfeatures.csv"],["POBP"])
