@@ -3,10 +3,24 @@ from sklearn.base import clone
 from sklearn.model_selection import cross_val_score
 import numpy as np
 
+# Adeboost param grid
+# param_grid = {
+#     'learning_rate': ('choice', [0.01, 0.05, 0.1]),
+#     'max_depth': {'type':'int', 'low':1, 'high':17, 'step':2},
+#     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
+# }
+
+# XGBoost param grid
+# param_grid = {
+#     'learning_rate': ('choice', [0.01, 0.05, 0.1, 0.3]),
+#     'max_depth': {'type':'int', 'low':1, 'high':17, 'step':2},
+#     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
+# }
+
+# RandomForest param grid
 param_grid = {
-    # 'learning_rate': ('uniform', 0.001, 0.3),
-    'max_depth': ('int', 3, 20),
-    'n_estimators': ('int', 50, 500),
+    'max_depth': {'type':'int', 'low':3, 'high':20, 'step':3},
+    'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
 }
 
 
@@ -40,19 +54,32 @@ def tune_optuna(param_space, model, X, y, n_trials=40, cv=3, random_state=305):
     best_score = float(study.best_value)
     return best_params, best_score, study
 
+from sys import argv
 
-# Example usage (same as original):
-from xgboost import XGBClassifier
+if len(argv) > 1:
+    match argv[1]:
+        case "rf":
+            from sklearn.ensemble import RandomForestClassifier
+            clf = RandomForestClassifier()
+        case "ab":
+            from sklearn.ensemble import AdaBoostClassifier
+            clf = AdaBoostClassifier()
+        case _:
+            from xgboost import XGBClassifier
+            clf = XGBClassifier(enable_categorical=True)
+        
+else:
+    from xgboost import XGBClassifier
+    clf = XGBClassifier(enable_categorical=True)
+
 from pandas import read_csv
 from numpy import ravel
-
-clf = XGBClassifier(enable_categorical=True)
 
 X = read_csv("data/cleaned_features.csv")
 categorical = ['COW', 'MAR', 'OCCP', 'POBP', 'RELP', 'SEX', 'RAC1P']
 X[categorical] = X[categorical].astype("category").apply(lambda s: s.cat.codes)
 y = ravel(read_csv("data/alt_acsincome_ca_labels_85.csv"))
 
-best_params, best_score, study = tune_optuna(param_grid, clf, X, y, n_trials=40, cv=3)
+best_params, best_score, study = tune_optuna(param_grid, clf, X, y, n_trials=20, cv=3)
 with open("param_opt_logs", "a", encoding="utf-8") as f:
-    f.write(f"{best_params} {best_score}\n")
+    f.write(f"{best_params} {best_score} {clf.__class__.__name__}\n")

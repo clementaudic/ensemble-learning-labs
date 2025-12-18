@@ -52,19 +52,22 @@ class ModelTester():
             self.predictions = self.model.predict(x_test if x_test is not None else self.X_test)
         return self.predictions
 
-    def test_model(self, in_logs=False):
+    def test_model(self, in_logs=False, file_name_prefix=""):
         start_time = time()
         self.model.fit(self.X_train, self.y_train)
         self.train_time = time() - start_time
-        preds = self.predict()
+        start_time = time()
+        self.predict()
+        self.test_time = time() - start_time
         self.score_model()
         self.train_score = accuracy_score(self.y_train, self.model.predict(self.X_train))
-        print(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds")
+        print(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds || Test time: {self.test_time:.2f} seconds")
         if in_logs:
             with open("logs", "a") as f:
-                f.write(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds\n")
-        self.save_confusion_matrix()
-        self.save_classification_report()
+                f.write(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds || Test time: {self.test_time:.2f} seconds\n")
+        self.save_confusion_matrix(file_name_prefix=file_name_prefix)
+        self.save_confusion_matrix(train=True, file_name_prefix=file_name_prefix)
+        self.save_classification_report(file_name_prefix=file_name_prefix)
         return self.test_score
     
     def score_model(self, x_test=None):
@@ -72,16 +75,20 @@ class ModelTester():
         self.test_score = accuracy_score(self.y_test, preds)
         return self.test_score
     
-    def save_confusion_matrix(self):
-        y_pred = self.model.predict(self.X_test)
-        cm = confusion_matrix(self.y_test, y_pred)
+    def save_confusion_matrix(self, train=False, file_name_prefix=""):
+        if train:
+            y_pred = self.model.predict(self.X_train)
+            cm = confusion_matrix(self.y_train, y_pred)
+        else:
+            y_pred = self.model.predict(self.X_test)
+            cm = confusion_matrix(self.y_test, y_pred)
         disp = ConfusionMatrixDisplay(cm)
         disp.plot()
-        plt.savefig(path.join("images", self.model.__class__.__name__, "confusion_matrix.png"))
+        plt.savefig(path.join("images", self.model.__class__.__name__, f"{file_name_prefix}confusion_matrix.png" if not train else f"{file_name_prefix}confusion_matrix_train.png"))
         plt.close()
 
-    def save_classification_report(self):
+    def save_classification_report(self, file_name_prefix=""):
         y_pred = self.model.predict(self.X_test)
         report = classification_report(self.y_test, y_pred)
-        with open(path.join("images", self.model.__class__.__name__, "classification_report.txt"), "w") as f:
+        with open(path.join("images", self.model.__class__.__name__, f"{file_name_prefix}classification_report.txt"), "w") as f:
             f.write(str(report))

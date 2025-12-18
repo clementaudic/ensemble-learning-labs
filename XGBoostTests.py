@@ -1,6 +1,8 @@
 from xgboost import XGBClassifier
 from utils import ModelTester
 
-clf = XGBClassifier(enable_categorical=True)
+params = {'learning_rate': 0.05, 'max_depth': 6, 'n_estimators': 400}
+
+clf = XGBClassifier(**params, enable_categorical=True)
 tester = ModelTester(clf)
-tester.test_model()
+tester.test_model(file_name_prefix="optimized_")
