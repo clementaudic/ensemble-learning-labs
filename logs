@@ -1,3 +1,24 @@
+Original dataset
+XGBClassifier || Test score: 0.8215445296904688 | Train score: 0.8870654822986147 | Training time: 2.26 seconds
+RandomForestClassifier || Test score: 0.8108420115923904 | Train score: 0.9983244612621858 | Training time: 160.03 seconds
+AdaBoostClassifier || Test score: 0.78258255369297 | Train score: 0.7861884299640841 | Training time: 54.27 seconds
+
+Groupped Occupations and Place of Birth
 XGBClassifier || Test score: 0.8167344091969504 | Train score: 0.8380980631092868 | Training time: 1.70 seconds
 RandomForestClassifier || Test score: 0.8082204959234229 | Train score: 1.0 | Training time: 23.49 seconds
 AdaBoostClassifier || Test score: 0.7965800043291085 | Train score: 0.7991918932786044 | Training time: 7.65 seconds
+
+Groupped Place of Birth
+XGBClassifier || Test score: 0.8241179441545011 | Train score: 0.8463474858902001 | Training time: 1.68 seconds
+RandomForestClassifier || Test score: 0.8134154260564227 | Train score: 0.9999839661364802 | Training time: 99.91 seconds
+AdaBoostClassifier || Test score: 0.7870078645470069 | Train score: 0.7909424704976912 | Training time: 37.71 seconds
+
+Groupped Place of Birth (without faulty extra feature)
+XGBClassifier || Test score: 0.8238052863224223 | Train score: 0.8447440995382247 | Training time: 1.66 seconds
+RandomForestClassifier || Test score: 0.8097597344813487 | Train score: 0.997137955361724 | Training time: 103.65 seconds
+AdaBoostClassifier || Test score: 0.7870078645470069 | Train score: 0.7909424704976912 | Training time: 36.48 seconds
+
+Groupped Occupations and Place of Birth (without faulty extra feature)
+XGBClassifier || Test score: 0.8172394718487698 | Train score: 0.8361018471010775 | Training time: 1.77 seconds
+RandomForestClassifier || Test score: 0.7996584814449602 | Train score: 0.9876699589533093 | Training time: 23.58 seconds
+AdaBoostClassifier || Test score: 0.7965800043291085 | Train score: 0.7991918932786044 | Training time: 6.59 seconds

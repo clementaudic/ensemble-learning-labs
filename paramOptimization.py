@@ -4,13 +4,13 @@ from sklearn.model_selection import cross_val_score
 import numpy as np
 
 param_grid = {
-    'learning_rate': ('uniform', 0.001, 0.3),
+    # 'learning_rate': ('uniform', 0.001, 0.3),
     'max_depth': ('int', 3, 20),
-    'n_estimators': ('int', 50, 400),
+    'n_estimators': ('int', 50, 500),
 }
 
 
-def tune_optuna(param_space, model, X, y, n_trials=20, cv=3, random_state=42):
+def tune_optuna(param_space, model, X, y, n_trials=40, cv=3, random_state=305):
     def suggest(trial, name, spec):
         t = spec[0]
         if t == 'uniform':
@@ -48,9 +48,11 @@ from numpy import ravel
 
 clf = XGBClassifier(enable_categorical=True)
 
-X = read_csv("data/alt_acsincome_ca_features_85.csv")
+X = read_csv("data/cleaned_features.csv")
+categorical = ['COW', 'MAR', 'OCCP', 'POBP', 'RELP', 'SEX', 'RAC1P']
+X[categorical] = X[categorical].astype("category").apply(lambda s: s.cat.codes)
 y = ravel(read_csv("data/alt_acsincome_ca_labels_85.csv"))
 
-best_params, best_score, study = tune_optuna(param_grid, clf, X, y, n_trials=20, cv=3)
+best_params, best_score, study = tune_optuna(param_grid, clf, X, y, n_trials=40, cv=3)
 with open("param_opt_logs", "a", encoding="utf-8") as f:
     f.write(f"{best_params} {best_score}\n")
