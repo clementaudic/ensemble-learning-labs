@@ -1,11 +1,8 @@
-from sklearn.model_selection import train_test_split
 from pandas import read_csv, cut
 import matplotlib.pyplot as plt
 
 features_df = read_csv("data/alt_acsincome_ca_features_85.csv")
 labels = read_csv("data/alt_acsincome_ca_labels_85.csv")
-
-X_train, X_val, y_train, y_val = train_test_split(features_df,labels,test_size=0.2,shuffle=True,random_state=42)
 
 # Proving OCCP feature pertinence: Global wage mean: 0.410083 VS engineer subset mean: 0.809428
 
@@ -92,7 +89,7 @@ features_df["OCCP"] = cut(features_df["OCCP"],bins = occupation_bins, labels = o
 def map_pobp(code):
 
     regions = {
-        "western_europe": list(range(101, 104)) + [109, 110, 122, 123, 125, 126, 137],
+        "western_europe": list(range(101, 104)) + [109, 110, 122, 123, 125, 126, 137], # western_europe
         "northern_europe": list(range(106, 109)) + [118, 119, 121, 127] + list(range(135, 137)) + list(range(138, 146)),
         "southern_europe": [115, 116, 120, 124] + list(range(129, 132)) + [133, 134, 146],
         "earthern_europe": [100, 104, 105, 117, 128, 132] + list(range(147, 158)) + [160] + list(range(162, 166)) + [167, 168],
@@ -115,7 +112,7 @@ def map_pobp(code):
             return region_name
 
 features_df["POBP"] = features_df["POBP"].apply(map_pobp)
-features_df.to_csv("data/cleaned_features.csv")
+features_df.to_csv("data/cleaned_features.csv",index=False)
 
 def plot_features_distribution_in_the_dataset(feature_name):
     feature_count = features_df[feature_name].value_counts()
@@ -129,4 +126,4 @@ def plot_features_distribution_in_the_dataset(feature_name):
     plt.show()
 
 # plot_features_distribution_in_the_dataset("OCCP")
-plot_features_distribution_in_the_dataset("POBP")
+# plot_features_distribution_in_the_dataset("POBP")
