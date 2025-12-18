@@ -108,20 +108,14 @@ def map_pobp(code):
 
 def group_features(dataset_names,features_to_group_names):
     for dataset_name in dataset_names:
-        if "_ca_" in dataset_name:
-            state_name = "california"
-        if "_co_" in dataset_name:
-            state_name = "colorado"
-        if "_ne_" in dataset_name:
-            state_name = "nevada"
-        features_df = read_csv(os.path.join("data",state_name,dataset_name))
+        features_df = read_csv(os.path.join("data",dataset_name))
         if "OCCP" in features_to_group_names:
             features_df["OCCP"] = cut(features_df["OCCP"],bins = occupation_bins, labels = occupation_labels)
         if "POBP" in features_to_group_names:
             features_df["POBP"] = features_df["POBP"].apply(map_pobp)
-        features_df.to_csv(os.path.join("data",state_name,dataset_name+"_with_"+"_and_".join(features_to_group_names)+"_regrouped"),index=False)
+        features_df.to_csv(os.path.join("data",dataset_name.replace(".csv","")+"_with_"+"_and_".join(features_to_group_names)+"_regrouped.csv"),index=False)
 
-# "alt_acsincome_ca_features_85.csv"
-# "acsincome_co_allfeatures.csv"
-# "acsincome_ne_allfeatures.csv"
-group_features(["acsincome_co_allfeatures.csv","acsincome_ne_allfeatures.csv"],["POBP"])
+group_features(["alt_acsincome_ca_features_85.csv"],["POBP","OCCP"])
+group_features(["alt_acsincome_ca_features_85.csv"],["POBP"])
+group_features(["alt_acsincome_ca_features_85.csv"],["OCCP"])
+group_features(["acsincome_co_allfeatures.csv","acsincome_ne_allfeatures.csv"],["POBP","OCCP"])
