@@ -8,4 +8,4 @@ clf_ab = AdaBoostClassifier()
 
 for clf in [clf_xgb, clf_rf, clf_ab]:
     tester = ModelTester(clf)
-    tester.test_model()
+    tester.test_model(in_logs=True)

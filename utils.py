@@ -10,15 +10,19 @@ from time import time
 categorical = ['COW', 'MAR', 'OCCP', 'POBP', 'RELP', 'SEX', 'RAC1P']
 
 class ModelTester():
-    def __init__(self, model):
+    def __init__(self, model, old_dataset=False):
         self.model = model
             
         output_dir = path.join("images", model.__class__.__name__)
         makedirs(output_dir, exist_ok=True)
-        self.X = read_csv("data/alt_acsincome_ca_features_85.csv")
+        if old_dataset:
+            self.X = read_csv("data/alt_acsincome_ca_features_85.csv")
+        else:
+            self.X = read_csv("data/cleaned_features.csv")
+            
         self.y = ravel(read_csv("data/alt_acsincome_ca_labels_85.csv"))
         if model.__class__.__name__ == "XGBClassifier":
-            self.X[categorical] = self.X[categorical].astype(int).astype("category")
+            self.X[categorical] = self.X[categorical].astype("category").apply(lambda s: s.cat.codes)
         else:
             encoder = OneHotEncoder()
             encoded = encoder.fit_transform(self.X[categorical])
@@ -45,7 +49,7 @@ class ModelTester():
             self.predictions = self.model.predict(x_test if x_test is not None else self.X_test)
         return self.predictions
 
-    def test_model(self):
+    def test_model(self, in_logs=False):
         start_time = time()
         self.model.fit(self.X_train, self.y_train)
         self.train_time = time() - start_time
@@ -53,6 +57,9 @@ class ModelTester():
         self.score_model()
         self.train_score = accuracy_score(self.y_train, self.model.predict(self.X_train))
         print(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds")
+        if in_logs:
+            with open("logs", "a") as f:
+                f.write(f"{self.model.__class__.__name__} || Test score: {self.test_score} | Train score: {self.train_score} | Training time: {self.train_time:.2f} seconds\n")
         self.save_confusion_matrix()
         self.save_classification_report()
         return self.test_score
