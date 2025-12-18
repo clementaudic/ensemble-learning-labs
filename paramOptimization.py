@@ -8,6 +8,9 @@ import numpy as np
 #     'learning_rate': ('choice', [0.01, 0.05, 0.1]),
 #     'max_depth': {'type':'int', 'low':1, 'high':18, 'step':2},
 #     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
+    # 'learning_rate': ("choice", [0.01, 0.05, 0.1, 0.3]),
+    # 'max_depth': ("choice", [1, 3, 6, 10, 12, 15, 20]),
+    # 'n_estimators': ("choice", [50, 100, 200, 300, 400]),
 # }
 
 # XGBoost param grid
@@ -19,8 +22,10 @@ import numpy as np
 
 # RandomForest param grid
 param_grid = {
-    'max_depth': {'type':'int', 'low':3, 'high':18, 'step':3},
-    'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
+    # 'max_depth': {'type':'int', 'low':3, 'high':18, 'step':3},
+    # 'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
+    'max_depth': ("choice", [3, 6, 10, 12, 15, 20]),
+    'n_estimators': ("choice", [50, 100, 200, 300, 400]),
 }
 
 
