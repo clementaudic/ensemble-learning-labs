@@ -6,34 +6,42 @@ import numpy as np
 # Adeboost param grid
 # param_grid = {
 #     'learning_rate': ('choice', [0.01, 0.05, 0.1]),
-#     'max_depth': {'type':'int', 'low':1, 'high':17, 'step':2},
+#     'max_depth': {'type':'int', 'low':1, 'high':18, 'step':2},
 #     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
 # }
 
 # XGBoost param grid
 # param_grid = {
 #     'learning_rate': ('choice', [0.01, 0.05, 0.1, 0.3]),
-#     'max_depth': {'type':'int', 'low':1, 'high':17, 'step':2},
+#     'max_depth': {'type':'int', 'low':1, 'high':18, 'step':2},
 #     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
 # }
 
 # RandomForest param grid
 param_grid = {
-    'max_depth': {'type':'int', 'low':3, 'high':20, 'step':3},
+    'max_depth': {'type':'int', 'low':3, 'high':18, 'step':3},
     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
 }
 
 
 def tune_optuna(param_space, model, X, y, n_trials=40, cv=3, random_state=305):
     def suggest(trial, name, spec):
-        t = spec[0]
-        if t == 'uniform':
-            return trial.suggest_float(name, spec[1], spec[2])
-        if t == 'int':
-            return trial.suggest_int(name, spec[1], spec[2])
-        if t == 'choice':
-            return trial.suggest_categorical(name, spec[1])
-        raise ValueError(f"Unknown spec type: {t}")
+        if isinstance(spec, tuple):
+            # old-style tuple ('choice', [...])
+            t = spec[0]
+            if t == 'choice':
+                return trial.suggest_categorical(name, spec[1])
+            raise ValueError(f"Unsupported tuple type: {t}")
+        elif isinstance(spec, dict):
+            t = spec.get('type')
+            if t == 'int':
+                return trial.suggest_int(name, spec['low'], spec['high'], step=spec.get('step', 1))
+            if t == 'float':
+                return trial.suggest_float(name, spec['low'], spec['high'], log=spec.get('log', False))
+            if t == 'choice':
+                return trial.suggest_categorical(name, spec['values'])
+        raise ValueError(f"Unknown spec format: {spec}")
+
 
     def objective(trial):
         params = {k: suggest(trial, k, spec) for k, spec in param_space.items()}
