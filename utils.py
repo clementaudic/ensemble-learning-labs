@@ -10,7 +10,7 @@ from time import time
 categorical = ['COW', 'MAR', 'OCCP', 'POBP', 'RELP', 'SEX', 'RAC1P']
 
 class ModelTester():
-    def __init__(self, model, dataset=None):
+    def __init__(self, model, dataset=None, reduce_train = 1.):
         self.model = model
             
         output_dir = path.join("images", model.__class__.__name__)
@@ -32,6 +32,13 @@ class ModelTester():
             self.X = concat([self.X.drop(columns=categorical), DataFrame(encoded, index=self.X.index, columns=encoder.get_feature_names_out(categorical))], axis=1)
 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.25, random_state=305)
+        
+        if reduce_train < 1 :
+            _, self.X_train, _,self.y_train = train_test_split(self.X_train, self.y_train, test_size=reduce_train, random_state=305)
+        
+        if reduce_train < 1 :
+            print(self.X_train.shape[0],self.X_test.shape[0])
+        # print(self.X_test.iloc[0])
         self.score = None
 
     def set_model(self, model):

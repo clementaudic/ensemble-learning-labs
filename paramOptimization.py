@@ -3,9 +3,9 @@ from sklearn.base import clone
 from sklearn.model_selection import cross_val_score
 import numpy as np
 
-# Adeboost param grid
+# Adaboost param grid
 param_grid = {
-    'learning_rate': {'type':'float', 'low':0.01, 'high':0.3, 'step':0.01},
+    'learning_rate': {'type':'float', 'low':0.01, 'high':2},
     # 'max_depth': {'type':'int', 'low':1, 'high':17, 'step':2},
     'n_estimators': {'type':'int', 'low':50, 'high':450, 'step':10},
     # 'learning_rate': ("choice", [0.01, 0.05, 0.1, 0.3]),
