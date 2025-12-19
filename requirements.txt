@@ -3,7 +3,7 @@ pandas
 scikit-learn
 matplotlib
 seaborn
-xgboost
+xgboost==2.1.4
 optuna
 lime
 shap

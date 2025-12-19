@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 features_df = read_csv("data/alt_acsincome_ca_features_85.csv")
 
-def plot_features_distribution_in_the_dataset(feature_name):
+def plot_features_distribution(feature_name):
     feature_count = features_df[feature_name].value_counts()
 
     plt.figure(figsize=(12, 6))
@@ -14,5 +14,5 @@ def plot_features_distribution_in_the_dataset(feature_name):
     plt.tight_layout()
     plt.show()
 
-# plot_features_distribution_in_the_dataset("OCCP")
-# plot_features_distribution_in_the_dataset("POBP")
+# plot_features_distribution("OCCP")
+# plot_features_distribution("POBP")
