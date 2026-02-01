@@ -25,10 +25,17 @@ class ModelTester():
             
         self.y = ravel(read_csv("data/alt_acsincome_ca_labels_85.csv"))
         if model.__class__.__name__ == "XGBClassifier":
-            self.X[categorical] = self.X[categorical].astype("category").apply(lambda s: s.cat.codes)
+            self.category_map = {}
+            
+            for col in categorical:
+                cat_col = self.X[col].astype("category")
+                self.category_map[col] = dict(enumerate(cat_col.cat.categories))
+                self.X[col] = cat_col.cat.codes
+            # self.X[categorical] = self.X[categorical].astype("category").apply(lambda s: s.cat.codes)
         else:
             encoder = OneHotEncoder(sparse_output=False)
             encoded = encoder.fit_transform(self.X[categorical])
+            self.category_map = {}
             self.X = concat([self.X.drop(columns=categorical), DataFrame(encoded, index=self.X.index, columns=encoder.get_feature_names_out(categorical))], axis=1)
 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.25, random_state=305)

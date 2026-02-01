@@ -34,20 +34,13 @@ def shap_plot(feature_to_plot=""):
         )
     else:
         feature_idx = list(tester.X_test.columns).index(feature_to_plot)
-        label_names = {
-            "MAR": ["Married","Widowed","Divorced","Separated","Never married or under 15 yo"],
-            "COW": ["N/A","Employee of a private for-profit company or business","Employee of a private not-for-profit, tax-exempt, or charitable organization","Local government employee (city, county, etc.)","State government employee","Federal government employee","Self-employed in own not incorporated business, professional practice, or farm","Self-employed in own incorporated business, professional practice or farm","Working without pay in family business or farm","Unemployed and last worked 5 years ago or earlier or never worked"],
-            "RELP": ["Reference person","Husband/wife","Biological son or daughter","Adopted son or daughter","Stepson or stepdaughter","Brother or sister","Father or mother","Grandchild","Parent-in-law","Son-in-law or daughter-in-law","Other relative","Roomer or boarder","Housemate or roommate","Unmarried partner","Foster child","Other nonrelative","Institutionalized group quarters population","Noninstitutionalized group quarters population"],
-            "SEX": ["Male","Female"],
-            "RAC1P": ["White alone","Black or African American alone","American Indian alone","Alaska Native alone","American Indian and Alaska Native tribes specified, or American Indian or Alaska Native, not specified and no other races","Asian alone","Native Hawaiian and Other Pacific Islander alone","Some Other Race alone","Two or More Races"],
-            "SCHL": ["N/A (less than 3 yo)","No schooling completed","Nursery school/preschool","Kindergarten","Grade 1","Grade 2","Grade 3","Grade 4","Grade 5","Grade 6","Grade 7","Grade 8","Grade 9","Grade 10","Grade 11","12th Grade - no diploma","Regular high school diploma","GED or alternative credential","Some college but less than 1 year","1 or more years of college credit but no degree","Associate’s degree","Bachelor’s degree","Master’s degree","Professional degree beyond a bachelor’s degree","Doctorate degree"]
-        }
+        label_names = tester.category_map
 
-        num_categories = len(label_names[feature_to_plot])
+        label_names[feature_to_plot]
         cmap = plt.colormaps["tab20"]
 
         legend_elements = [
-            Patch(facecolor=cmap(i / 20), label=f"{label_names[feature_to_plot][i]}") for i in range(num_categories)
+            Patch(facecolor=cmap(i / 20), label=f"{label}") for i,label in label_names[feature_to_plot].items()
         ]
 
         shap.summary_plot(
@@ -67,4 +60,4 @@ def shap_plot(feature_to_plot=""):
     # Use bbox_inches="tight" instead of plt.tight_layout() as the latter does no not work well when legend are too large (for instance, with feature_to_plot = "COW", it results in "UserWarning: Tight layout not applied. The bottom and top margins cannot be made large enough to accommodate all axes decorations.")
     plt.savefig(f"images/shap/summary_default{'' if old else '_new'}{'' if feature_to_plot == '' else '_' + feature_to_plot}.png",bbox_inches="tight")
 
-shap_plot("SCHL")
+shap_plot("POBP")

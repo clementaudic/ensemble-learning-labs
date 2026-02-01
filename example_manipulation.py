@@ -24,5 +24,6 @@ explainer = lime_tabular.LimeTabularExplainer(training_data=tester.X_train.value
 exp = explainer.explain_instance(data_row=dataset.iloc[0].values,
                                  predict_fn=tester.model.predict_proba)
 fig = exp.as_pyplot_figure()
+plt.title("LIME explanation for first test instance (class 1)")
 plt.tight_layout()
 plt.savefig(f"images/lime/manipulated_WKHP_40.png")
